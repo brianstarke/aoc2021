@@ -12,15 +12,17 @@ enum Direction {
 struct Position {
     horizontal: u32,
     depth: u32,
+    aim: u32,
 }
 
 impl fmt::Display for Position {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "horizontal : {}, depth: {}, puzzle answer: {}",
+            "horizontal : {}, depth: {}, aim: {}, puzzle answer: {}",
             self.horizontal,
             self.depth,
+            self.aim,
             self.horizontal * self.depth
         )
     }
@@ -33,6 +35,10 @@ fn main() {
     println!(
         "Part One Result - {}",
         calculate_final_position(&directions)
+    );
+    println!(
+        "Part Two Result - {}",
+        calculate_final_position_with_aim(&directions)
     );
 }
 
@@ -66,5 +72,30 @@ fn calculate_final_position(d: &Vec<Direction>) -> Position {
         }
     }
 
-    Position { horizontal, depth }
+    Position {
+        horizontal,
+        depth,
+        aim: 0,
+    }
+}
+
+fn calculate_final_position_with_aim(d: &Vec<Direction>) -> Position {
+    let (mut horizontal, mut depth, mut aim) = (0, 0, 0);
+
+    for i in d {
+        match i {
+            Direction::Down(v) => aim = aim + v,
+            Direction::Up(v) => aim = aim - v,
+            Direction::Forward(v) => {
+                horizontal = horizontal + v;
+                depth = depth + v * aim;
+            }
+        }
+    }
+
+    Position {
+        horizontal,
+        depth,
+        aim,
+    }
 }
